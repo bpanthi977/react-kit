@@ -32,6 +32,7 @@ jobs:
         run: |
           yarn
           yarn version --patch
+          yarn publish . --tag next
           version=$(node -p "require('./package.json').version")
           echo "RELEASE_VERSION=v${version}" >> $GITHUB_ENV
         env:
@@ -47,7 +48,7 @@ jobs:
         uses: actions/create-release@v1
         with:
           tag_name: ${{ env.RELEASE_VERSION }}
-          release_name: Release v${{ env.RELEASE_VERSION }}
+          release_name: Release ${{ env.RELEASE_VERSION }}
           body: ${{steps.github_release.outputs.changelog}}
           draft: true
           prerelease: false
