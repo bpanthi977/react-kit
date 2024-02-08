@@ -8,7 +8,7 @@ export class FieldController<V extends Validator<any, any>> {
   public error?: Error;
   public ref = new ReferenceMultiple(0);
 
-  constructor(value: ValidatorOutput<V>, private readonly validator: V, private key: string, private readonly updateParent: (value: ValidatorOutput<V>) => void) {
+  constructor(value: ValidatorOutput<V>, private validator: V, private key: string, private readonly updateParent: (value: ValidatorOutput<V>) => void) {
     this._value = value;
   }
 
@@ -31,6 +31,10 @@ export class FieldController<V extends Validator<any, any>> {
 
       this.updateRef();
     }
+  }
+
+  public swapValidator<NewV extends V>(validator: NewV) {
+    this.validator = validator;
   }
 
   private updateRef() {

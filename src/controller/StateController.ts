@@ -65,6 +65,24 @@ export class StateController<T extends Structure> {
     }
   }
 
+
+  swapSubController<K extends SubStructureKeys<T>, B extends SubStructure<T, K>>(key: K, ctr: StateController<B>) {
+    const original = this.subcontrollers.get(key);
+    if (original) {
+      if (original instanceof FieldController) {
+        throw new Error(`Can't replace field ${key as string} with state.`);
+      }
+      original.updateParent = undefined;
+    }
+
+    ctr.updateParent = (newValue: StateOf<B>) => {
+      (this.state[key] as StateOf<B>) = newValue;
+      this.updateRef();
+    }
+    ctr.updateParent(ctr.state);
+    this.subcontrollers.set(key, ctr);
+  }
+
   private updateRef() {
     if (this.validator) {
       try {
