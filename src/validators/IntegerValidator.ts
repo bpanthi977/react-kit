@@ -42,4 +42,9 @@ export class IntegerValidator implements Validator<Input, Output> {
     })
     return this;
   }
+
+  custom(rule: (input: number) => number) {
+    this.validations.push(rule);
+    return this;
+  }
 }
