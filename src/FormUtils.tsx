@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { FieldController, IntegerValidator, SetValidator, StateController, StringValidator, Structure, Validator, ValidatorInput, ValidatorOutput } from "./index.js";
-import { ReferenceMultiple } from "@bhoos/game-kit-ui";
+import { FieldController, StateController, Structure, Validator, ValidatorInput, ValidatorOutput } from "./index.js";
 
 export function isErrorFree(ctr: StateController<any> | FieldController<any>) {
   if (ctr.error) return false;
@@ -20,7 +19,7 @@ export function isStateModified(c: StateController<any>) {
 
 export function useStateController<T extends Structure>(init: () => StateController<T>) {
   const [controller, _] = useState(init);
-  ReferenceMultiple.use(controller.ref);
+  controller.ref.use()
   return controller;
 }
 
