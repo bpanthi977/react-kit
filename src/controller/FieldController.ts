@@ -1,12 +1,11 @@
-import { ReferenceMultiple } from '@bhoos/game-kit-ui';
-import { Validator, ValidatorInput, ValidatorOutput } from '../index.js';
+import { Ref, Validator, ValidatorInput, ValidatorOutput } from '../index.js';
 
 export class FieldController<V extends Validator<any, any>> {
   private _value: ValidatorOutput<V>;
 
   public get value() { return this._value };
   public error?: Error;
-  public ref = new ReferenceMultiple(0);
+  public ref = new Ref(0);
 
   constructor(value: ValidatorOutput<V>, private validator: V, private key: string, private readonly updateParent: (value: ValidatorOutput<V>) => void) {
     this._value = value;

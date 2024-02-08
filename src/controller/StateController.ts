@@ -1,5 +1,4 @@
-import { ReferenceMultiple } from '@bhoos/game-kit-ui';
-import { Validator, ValidatorOutput, FieldController } from '../index.js';
+import { Validator, ValidatorOutput, FieldController, Ref } from '../index.js';
 import { isValidator } from '../validators/Validator.js';
 
 export type Structure = { [key: string]: Validator<any, any> | Structure };
@@ -26,7 +25,7 @@ export class StateController<T extends Structure> {
   public subcontrollers = new Map<keyof T, StateController<any> | FieldController<any>>();
   public state: StateOf<T>;
   public error?: Error;
-  public ref = new ReferenceMultiple(0);
+  public ref = new Ref(0);
 
   constructor(
     private readonly structure: T,

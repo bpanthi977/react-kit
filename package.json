@@ -1,22 +1,23 @@
 {
   "name": "@bhoos/react-kit-form",
-  "version": "1.0.0-rc.6",
+  "version": "3.0.0",
   "description": "Bhoos Form Library",
   "main": "src/index.ts",
   "files": [
     "src"
   ],
+  "scripts": {
+    "build": "tsc"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "peerDependencies": {
-    "react": ">=17",
-    "@bhoos/game-kit-ui": ">=4"
+    "react": ">=17"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",
-    "react": ">=17",
-    "@bhoos/game-kit-ui": "^4.5.0"
+    "react": ">=17"
   },
   "repository": "https://github.com/bhoos/react-kit",
   "author": "Bibek Panthi",
