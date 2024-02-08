@@ -1,4 +1,2 @@
-export * from './hooks.js';
-export { Form, FormController } from './FormController.js';
-export * from './parsers';
-export * from './useFormSubmit.js';
+export { Controller, Structure, StateOf } from './FormController';
+export * from './validators';

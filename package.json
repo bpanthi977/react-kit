@@ -10,7 +10,13 @@
     "registry": "https://npm.pkg.github.com"
   },
   "peerDependencies": {
-    "react": ">=17"
+    "react": ">=17",
+    "@bhoos/game-kit-ui": ">=4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.55",
+    "react": ">=17",
+    "@bhoos/game-kit-ui": "^4.5.0"
   },
   "repository": "https://github.com/bhoos/react-kit",
   "author": "Ranjan Shrestha",
