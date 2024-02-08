@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { FieldController, StateController, Structure, Validator, ValidatorInput, ValidatorOutput } from "./index.js";
+import { FieldController, StateController, StateOf, Structure, Validator, ValidatorInput, ValidatorOutput } from "./index.js";
 
-export function isErrorFree(ctr: StateController<any> | FieldController<any>) {
+export function isErrorFree(ctr: StateController<any, any> | FieldController<any>) {
   if (ctr.error) return false;
   if (ctr instanceof StateController) {
     for(const [_, subctr] of ctr.subcontrollers) {
@@ -13,11 +13,11 @@ export function isErrorFree(ctr: StateController<any> | FieldController<any>) {
   return true;
 }
 
-export function isStateModified(c: StateController<any>) {
+export function isStateModified(c: StateController<any, any>) {
   return c.ref.value != 0;
 }
 
-export function useStateController<T extends Structure>(init: () => StateController<T>) {
+export function useStateController<T extends Structure, S extends StateOf<T>>(init: () => StateController<T, S>) {
   const [controller, _] = useState(init);
   controller.ref.use()
   return controller;

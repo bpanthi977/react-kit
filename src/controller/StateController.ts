@@ -10,7 +10,8 @@ export type StateOf<S extends Structure> = {
 }
 
 type SubStructure<S extends Structure, K extends keyof S> = S[K] extends Structure ? S[K] : never;
-type FieldValidator<S extends Structure, K extends keyof S> = S[K] extends Validator<infer I, infer O> ? Validator<I, O> : never;
+type FieldValidator<S extends Structure, K extends keyof S> = S[K] extends Validator<infer _, infer _> ? S[K] : never;
+type SubStateController<S extends Structure, K extends keyof S> = StateController<SubStructure<S, K>, StateOf<SubStructure<S, K>>>;
 
 type SubStructureKeys<S extends Structure> = keyof {
   [P in keyof S as S[P] extends Validator<any, any> ? never : P] : S[P]
@@ -19,32 +20,32 @@ type FieldKeys<S extends Structure> = keyof {
   [P in keyof S as S[P] extends Validator<any, any> ? P : never] : S[P]
 }
 
-export class StateController<T extends Structure> {
-  private updateParent?: (value: StateOf<T>) => void;
+export class StateController<T extends Structure, S extends StateOf<T> = StateOf<T>> {
+  private updateParent?: () => void;
 
-  public subcontrollers = new Map<keyof T, StateController<any> | FieldController<any>>();
-  public state: StateOf<T>;
+  public subcontrollers = new Map<keyof T, StateController<any, any> | FieldController<any>>();
+  public state: S;
   public error?: Error;
   public ref = new Ref(0);
 
   constructor(
     private readonly structure: T,
-    state: StateOf<T>,
-    private readonly validator?: (state: StateOf<T>) => StateOf<T>
+    state: S,
+    private readonly validator?: (state: S) => S
   ) {
     this.state = state;
   }
 
   substate<K extends FieldKeys<T>>(key: K): FieldController<FieldValidator<T, K>>;
-  substate<K extends SubStructureKeys<T>>(key: K): StateController<SubStructure<T, K>>;
+  substate<K extends SubStructureKeys<T>>(key: K): SubStateController<T, K>;
   substate<K extends keyof T>(key: K) {
     const cached = this.subcontrollers.get(key);
     if (cached) return cached;
 
-    const value = this.structure[key];
-    if (isValidator(value)) { // key is StateKey
-      const value = this.state[key] as ValidatorOutput<T[K]>;
-      const stateController = new FieldController(value, value, key as string, (newValue) => {
+    const structureValue = this.structure[key];
+    if (isValidator(structureValue)) { // key is StateKey
+      const fieldValue = this.state[key] as ValidatorOutput<T[K]>;
+      const stateController = new FieldController(fieldValue, structureValue, key as string, (newValue) => {
         this.state[key] = newValue;
         this.updateRef();
       });
@@ -54,9 +55,9 @@ export class StateController<T extends Structure> {
     } else { // key is SubStructureKey
       type SubStruct = SubStructure<T, K>;
       type SubState = StateOf<SubStruct>;
-      const subcontroller = new StateController(value as SubStruct, this.state[key] as SubState);
-      subcontroller.updateParent = (newValue: SubState) => {
-        (this.state[key] as SubState) = newValue;
+      const subcontroller = new StateController(structureValue as SubStruct, this.state[key] as SubState);
+      subcontroller.updateParent = () => {
+        (this.state[key] as SubState) = subcontroller.state;
         this.updateRef();
       }
       this.subcontrollers.set(key, subcontroller);
@@ -65,20 +66,23 @@ export class StateController<T extends Structure> {
   }
 
 
-  swapSubController<K extends SubStructureKeys<T>, B extends SubStructure<T, K>>(key: K, ctr: StateController<B>) {
+  swapSubController<K extends SubStructureKeys<T>, B extends SubStructure<T, K>, S extends StateOf<B>>(key: K, ctr: StateController<B, S>) {
     const original = this.subcontrollers.get(key);
     if (original) {
       if (original instanceof FieldController) {
-        throw new Error(`Can't replace field ${key as string} with state.`);
+        throw new Error(`Can't replace field controller ${key as string} with state controller.`);
       }
       original.updateParent = undefined;
     }
 
-    ctr.updateParent = (newValue: StateOf<B>) => {
-      (this.state[key] as StateOf<B>) = newValue;
+    ctr.updateParent = () => {
+      (this.state[key] as StateOf<B>) = ctr.state;
       this.updateRef();
     }
-    ctr.updateParent(ctr.state);
+
+    if (this.state[key] != ctr.state)
+      ctr.updateParent();
+
     this.subcontrollers.set(key, ctr);
   }
 
@@ -97,6 +101,6 @@ export class StateController<T extends Structure> {
     }
 
     this.ref.setValue(this.ref.value + 1);
-    this.updateParent?.(this.state);
+    this.updateParent?.();
   }
 }
