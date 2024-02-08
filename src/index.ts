@@ -1,2 +1,3 @@
-export { Controller, Structure, StateOf } from './FormController';
-export * from './validators';
+export { StateController, FieldController, Structure, StateOf } from './controller/index.js';
+export * from './validators/index.js';
+export { isErrorFree, isStateModified, useStateController } from './FormUtils.js';

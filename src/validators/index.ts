@@ -1,3 +1,3 @@
-export { Validator, ValidatorInput, ValidatorOutput } from './Validator';
-export { IntegerValidator } from './IntegerValidator';
-export { StringValidator } from './StringValidator';
+export { Validator, ValidatorInput, ValidatorOutput } from './Validator.js';
+export { IntegerValidator } from './IntegerValidator.js';
+export { StringValidator } from './StringValidator.js';
