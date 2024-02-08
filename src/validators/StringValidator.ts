@@ -30,4 +30,9 @@ export class StringValidator implements Validator<Input, Output> {
     })
     return this;
   }
+
+  custom(rule: (input: string) => string) {
+    this.validations.push(rule);
+    return this;
+  }
 }
