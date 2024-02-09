@@ -23,7 +23,7 @@ type FieldKeys<S extends Structure> = keyof {
 export class StateController<T extends Structure, S extends StateOf<T> = StateOf<T>> {
   private updateParent?: () => void;
 
-  public subcontrollers = new Map<keyof T, StateController<any, any> | FieldController<any>>();
+  public subcontrollers = new Map<any, StateController<any, any> | FieldController<any>>();
   public state: S;
   public error?: Error;
   public ref = new Ref(0);
