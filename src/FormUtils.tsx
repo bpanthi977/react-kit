@@ -13,7 +13,7 @@ export function isErrorFree(ctr: StateController<any, any> | FieldController<any
   return true;
 }
 
-export function isStateModified(c: StateController<any, any>) {
+export function isStateTouched(c: StateController<any, any>) {
   return c.ref.value != 0;
 }
 
