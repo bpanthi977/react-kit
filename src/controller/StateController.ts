@@ -36,22 +36,31 @@ export class StateController<T extends Structure, S extends StateOf<T> = StateOf
     this.state = state;
   }
 
-  substate<K extends FieldKeys<T>>(key: K): FieldController<FieldValidator<T, K>>;
-  substate<K extends SubStructureKeys<T>>(key: K): SubStateController<T, K>;
-  substate<K extends keyof T>(key: K) {
+  field<K extends FieldKeys<T>>(key: K): FieldController<FieldValidator<T, K>> {
     const cached = this.subcontrollers.get(key);
-    if (cached) return cached;
+    if (cached) return cached as FieldController<FieldValidator<T,K>>;
 
-    const structureValue = this.structure[key];
+    const structureValue = this.structure[key]
     if (isValidator(structureValue)) { // key is StateKey
       const fieldValue = this.state[key] as ValidatorOutput<T[K]>;
-      const stateController = new FieldController(fieldValue, structureValue, key as string, (newValue) => {
+      const stateController = new FieldController<FieldValidator<T, K>>(fieldValue, structureValue as FieldValidator<T, K>, key as string, (newValue) => {
         this.state[key] = newValue;
         this.updateRef();
       });
       this.subcontrollers.set(key, stateController);
       return stateController;
+    } else {
+      throw new Error(`${key as string} is not a field.`)
+    }
+  }
 
+  substate<K extends SubStructureKeys<T>>(key: K): SubStateController<T, K> {
+    const cached = this.subcontrollers.get(key);
+    if (cached) return cached as SubStateController<T, K>;
+
+    const structureValue = this.structure[key];
+    if (isValidator(structureValue)) {
+      throw new Error(`${key as string} is not a sub structure`);
     } else { // key is SubStructureKey
       type SubStruct = SubStructure<T, K>;
       type SubState = StateOf<SubStruct>;
