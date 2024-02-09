@@ -32,11 +32,6 @@ export class FieldController<V extends Validator<any, any>> {
     }
   }
 
-  public swapValidator<NewV extends Validator<ValidatorInput<V>, ValidatorOutput<V>>>(validator: NewV) {
-    //@ts-ignore
-    this.validator = validator;
-  }
-
   private updateRef() {
     this.ref.setValue(this.ref.value + 1);
     this.updateParent(this._value);
