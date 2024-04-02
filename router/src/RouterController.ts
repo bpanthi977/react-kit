@@ -41,7 +41,7 @@ export class RouterController<T> {
       count -= 1;
     }
     const lastItem = this.stack[this.stack.length - 1];
-    const fullPath = cleanPath(lastItem);
+    const fullPath = lastItem;
 
     let routeToUse: RouteController<T> | undefined = route;
     // search for route until it's parent route is found
